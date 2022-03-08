@@ -1,100 +1,115 @@
-// ignore_for_file: deprecated_member_use
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:konverter_suhu2/widgets/KonversiSuhu.dart';
+import 'package:konverter_suhu2/widgets/PerhitunganTerakhir.dart';
+import 'package:konverter_suhu2/widgets/RiwayatPerhitungn.dart';
+import 'package:konverter_suhu2/widgets/TargetPerhitungan.dart';
+import 'package:konverter_suhu2/widgets/inputSuhu.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
-  _MyAppState createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const MyHomePage(title: 'Konverter Suhu'),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
   TextEditingController etInput = TextEditingController();
-
-  double inputUser = 0;
-  double kelvin = 0;
-  double reamur = 0;
-
-konversi (){
-  //set state
-  setState(() {
-    inputUser = double.parse(etInput.text);
-    reamur = 4 / 5 * inputUser;
-    kelvin = inputUser + 273;
-  });
-}
+  List<String> listSatuanSuhu = ['Kelvin', 'Reamur', 'Fahrenheit'];
+  String selectedDropdown = 'Kelvin';
+  double hasilPerhitungan = 0.0;
+  List<String> listHasil = [];
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Container(
+        margin: EdgeInsets.all(8),
+        child: Column(
+          // mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            InputSuhu(etInput: etInput),
+            const SizedBox(height: 8),
+            TargetPerhitungan(
+              selectedDropdown: selectedDropdown, 
+              listSatuanSuhu: listSatuanSuhu, 
+              onDropdownChanged: onDropdownChanged,
+              ),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              'Hasil',
+              style: TextStyle(fontSize: 20),
+            ),
+            PerhitunganTerakhir(hasilPerhitungan: hasilPerhitungan),
+            const SizedBox(
+              height: 10,
+            ),
+            KonversiSuhu(onPressed: konversiSuhu,),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              'Riwayat Konversi',
+              style: TextStyle(fontSize: 20),
+            ),
+            RiwayatPerhitungan(listHasil: listHasil),
+          ],
         ),
-        home: Scaffold(
-          appBar: AppBar(
-            title: const Text("Suhu Converter"),
-          ),
-          body: Container(
-              margin: const EdgeInsets.all(8),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextFormField(
-                    decoration:
-                        const InputDecoration(hintText: "Masukkan Nilai Suhu celcius"),
-                    keyboardType: TextInputType
-                        .number, //supaya jenis text nya angka bukan huruf
-                    //inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    controller: etInput,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Column(
-                        children: [
-                          const Text(
-                            "Suhu Dalam Kelvin",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          Text(
-                            '$kelvin',
-                            style: const TextStyle(fontSize: 30),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          const Text(
-                            "Suhu Dalam Reamur",
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          Text(
-                            '$reamur',
-                            style: const TextStyle(fontSize: 30),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: RaisedButton(
-                        onPressed: konversi,
-                        color: Colors.blue,
-                        textColor: Colors.black,
-                        child: const Text("Konversi"),
-                      ))
-                ],
-              )),
-        ));
+      ),
+    );
+  }
+
+  void konversiSuhu() {
+    setState(() {
+      if (etInput.text.isNotEmpty) {
+        
+        switch (selectedDropdown) {
+          case 'Kelvin': 
+            hasilPerhitungan = int.parse(etInput.text) + 273.15;
+            break;
+          case 'Reamur': 
+            hasilPerhitungan = int.parse(etInput.text) * 4/5;
+            break;
+          case 'Fahrenheit': 
+            hasilPerhitungan = (int.parse(etInput.text)* 9/5) + 32 ;
+            break;
+        }
+        listHasil.add(selectedDropdown + ' : ' + hasilPerhitungan.toString());
+      }
+    });
+  }
+
+  void onDropdownChanged(Object? value) {
+    setState(() {
+      selectedDropdown = value.toString();
+    });
   }
 }
