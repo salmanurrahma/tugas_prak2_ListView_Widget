@@ -6,11 +6,11 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart'; 
+import 'package:flutter_test/flutter_test.dart';
 
-import 'package:konversi_suhu/main.dart';
+import 'package:konverter_suhu/main.dart';
 
-Future<void> main() async {
+void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const MyApp());
@@ -27,4 +27,5 @@ Future<void> main() async {
     expect(find.text('0'), findsNothing);
     expect(find.text('1'), findsOneWidget);
   });
+}
 }
